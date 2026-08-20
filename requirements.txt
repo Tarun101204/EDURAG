@@ -1,0 +1,9 @@
+fastapi
+langchain-community
+langchain-classic
+langchain-groq
+langchain-huggingface
+langchain-text-splitters
+python-dotenv
+python-multipart
+uvicorn
