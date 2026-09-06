@@ -4,8 +4,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_groq import ChatGroq
-from langchain_classic.chains import create_retrieval_chain
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
 # 1. Set up HuggingFace (This converts text into numbers locally on your machine)
@@ -13,6 +13,9 @@ embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 # 2. Tell the system where to save our Chroma database
 CHROMA_PATH = "./chroma_db"
+
+# 3. Initialize the database connection globally ONCE, not on every question.
+db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embeddings)
 
 def ingest_pdf(file_path: str):
     """This function loads a PDF, chops it up, and saves it to the database."""
@@ -36,8 +39,7 @@ def ingest_pdf(file_path: str):
 def get_answer(query: str, groq_api_key: str):
     """This function searches the database and uses an AI model to answer your question."""
     
-    # Load the database and set it to retrieve the top 3 most relevant chunks
-    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embeddings)
+    # Use the global db to retrieve the top 3 most relevant chunks
     retriever = db.as_retriever(search_kwargs={"k": 3})
 
     # Initialize the Groq LLM (This is the AI brain that will generate the final answer)
@@ -53,6 +55,7 @@ def get_answer(query: str, groq_api_key: str):
         "If the answer is not in the context, clearly state that you don't know based on the provided document.\n\n"
         "Context:\n{context}"
     )
+    
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "{input}"),
