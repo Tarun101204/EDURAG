@@ -1,9 +1,4 @@
 .env
-.venv/
-venv/
-env/
-__pycache__/
-*.py[cod]
 chroma_db/
-pdfs/*
-!pdfs/.gitkeep
+__pycache__/
+pdfs/
