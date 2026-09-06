@@ -45,7 +45,7 @@ def get_answer(query: str, groq_api_key: str):
     # Initialize the Groq LLM (This is the AI brain that will generate the final answer)
     llm = ChatGroq(
         groq_api_key=groq_api_key, 
-        model_name="llama3-8b-8192",
+        model_name="openai/gpt-oss-20b",
         temperature=0.2
     )
 
